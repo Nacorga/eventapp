@@ -1,0 +1,44 @@
+@import '../styles/variables';
+
+.header {
+    background: #fff;
+    width: 100%;
+    border-bottom: 1px solid $GREY;
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .logo {
+        height: 60px;
+        width: 60px;
+        position: absolute;
+        left: 30px;
+    }
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    height: 80px;
+    
+    a {
+        color: $DARK_GREY;
+        font-weight: 600;
+
+        &.active {
+            color: $BLUE;
+        }
+
+        &:hover {
+            text-decoration: none;
+
+            &:not(.active) {
+                color: $DARK_GREY;
+            }
+        }
+    }
+
+    .nav-item:not(:last-child) {
+        margin-right: 15px;
+    }
+}

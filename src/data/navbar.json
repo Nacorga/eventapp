@@ -1,0 +1,14 @@
+{
+    "navbar": [
+        {
+            "name": "All events",
+            "route": "/all-events",
+            "icon": 85
+        },
+        {
+            "name": "My events",
+            "route": "/my-events",
+            "icon": 85
+        }
+    ]
+}
