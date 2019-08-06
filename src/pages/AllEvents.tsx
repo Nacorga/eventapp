@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import Moment from 'react-moment';
 import '../styles/AllEvents.scss';
 
 class AllEvents extends Component {
@@ -27,9 +28,67 @@ class AllEvents extends Component {
 
   render() {
 
+    let dict: any[] = [];
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
+
+    this.state.events.forEach((event: any, i) => {
+
+      event.startDate = new Date(event.startDate);
+
+      const dictKey: any = `${ event.startDate.getDate()}${event.startDate.getMonth()}${event.startDate.getFullYear() }`;
+      const dateFormatted = `${ days[event.startDate.getDay()] } ${ event.startDate.getDate() } ${ months[event.startDate.getMonth()] }`;
+
+      if (!dict[dictKey]) {
+
+        dict[dictKey] = [
+          {
+            id: dictKey,
+            dateFormatted,
+            events: []
+          }
+        ];
+
+      }
+
+      if (dictKey === dict[dictKey][0].id) {
+        dict[dictKey][0].events.push(event);
+      }
+      
+    });
+
+    const eventsDays = getEventsDays();
+
+    function getEventsDays() {
+
+      return dict.map((day: any) => {
+
+        return [
+  
+          <h2>{ day[0].dateFormatted }</h2>
+  
+          ,
+  
+          <div className="day-events">
+            {
+              day[0].events.map((event: any) => {
+                return (
+                  <p>{ event.name }</p>
+                )
+              })
+            }
+          </div>
+  
+        ]
+
+      }
+
+    )}
+
     return (
-        <div>
-        </div>
+      <div className="day">
+        { eventsDays }
+      </div>
     );
 
   }
