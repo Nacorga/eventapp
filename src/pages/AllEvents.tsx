@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Moment from 'react-moment';
 import '../styles/AllEvents.scss';
 
 class AllEvents extends Component {
@@ -62,31 +61,34 @@ class AllEvents extends Component {
     function getEventsDays() {
 
       return dict.map((day: any) => {
+          
 
-        return [
+          return (
+
+            <div className="day-events">
   
-          <h2>{ day[0].dateFormatted }</h2>
-  
-          ,
-  
-          <div className="day-events">
-            {
-              day[0].events.map((event: any) => {
-                return (
-                  <p>{ event.name }</p>
-                )
-              })
-            }
-          </div>
-  
-        ]
+              <h2 className="day-title">{ day[0].dateFormatted }</h2>
+      
+              <div className="card events-card">
+                {
+                  day[0].events.map((event: any) => {
+                    return (
+                      <p>{ event.name }</p>
+                    )
+                  })
+                }
+              </div>
+
+            </div>
+    
+          )
 
       }
 
     )}
 
     return (
-      <div className="day">
+      <div className="events-container">
         { eventsDays }
       </div>
     );
