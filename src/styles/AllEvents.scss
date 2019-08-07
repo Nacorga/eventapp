@@ -1,3 +1,5 @@
+@import '../styles/variables';
+
 .day-events {
 
     &:not(:last-child) {
@@ -11,8 +13,29 @@
     }
 
     .events-card {
-        padding: 20px;
-        display: grid;
+        padding: 0 20px;
+
+        .event-row {
+            padding: 20px 0;
+            display: grid;
+            grid-template-columns: 15% 70% 15%;
+
+            &:not(:last-child) {
+                border-bottom: 1px solid $GREY;
+            }
+
+            .hour {
+                span {
+                    font-size: 22px;
+                    font-weight: 500;
+                }
+            }
+    
+            .buttons {
+                display: flex;
+                justify-content: center;
+            }
+        }
     }
 
 }

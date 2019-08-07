@@ -2,36 +2,63 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import '../styles/AllEvents.scss';
 
+interface EventI {
+  readonly id: number;
+  isFree: boolean;
+  name: string,
+  city: number | CityI;
+  startDate: Date;
+  endDate: Date;
+  duration: string
+}
+
+interface CityI {
+  readonly id: number;
+  readonly name: string;
+}
+
 class AllEvents extends Component {
 
   state = {
     events: [],
+    formattedEvents: [],
     cities: []
+  }
+
+  constructor() {
+
+    super('hola');
+
+    this.setCityEvent = this.setCityEvent.bind(this);
+    this.formatEventsData = this.formatEventsData.bind(this);
+    this.getEventsDays = this.getEventsDays.bind(this);
+    this.setEventDuration = this.setEventDuration.bind(this);
+    this.dateMeasure = this.dateMeasure.bind(this);
+    this.setEventDurationFormat = this.setEventDurationFormat.bind(this);
+    this.sortEvents = this.sortEvents.bind(this);
+
   }
 
   componentDidMount() {
 
-    axios.get('https://5d48447c2d59e50014f209ff.mockapi.io/trivago/events')
-      .then(res => {
-          const events = res.data;
-          this.setState({ events });
-        })
-
-    axios.get('https://5d48447c2d59e50014f209ff.mockapi.io/trivago/cities')
-      .then(res => {
-          const cities = res.data;
-          this.setState({ cities });
-      })
+    axios.all([
+      axios.get('https://5d48447c2d59e50014f209ff.mockapi.io/trivago/events'),
+      axios.get('https://5d48447c2d59e50014f209ff.mockapi.io/trivago/cities')
+    ]).then(axios.spread((events, cities) => {
+      this.setState({events: events.data});
+      this.setState({cities: cities.data});
+    }))
+    .catch(error => console.log(error));
 
   }
 
-  render() {
+  formatEventsData() {
 
     let dict: any[] = [];
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
 
-    this.state.events.forEach((event: any, i) => {
+    this.state.events.forEach((event: any) => {
 
       event.startDate = new Date(event.startDate);
 
@@ -43,7 +70,7 @@ class AllEvents extends Component {
         dict[dictKey] = [
           {
             id: dictKey,
-            dateFormatted,
+            date_formatted: dateFormatted,
             events: []
           }
         ];
@@ -51,41 +78,96 @@ class AllEvents extends Component {
       }
 
       if (dictKey === dict[dictKey][0].id) {
+        this.setCityEvent(event);
+        this.setEventDuration(event);
         dict[dictKey][0].events.push(event);
       }
       
     });
 
-    const eventsDays = getEventsDays();
+    console.log(dict)
 
-    function getEventsDays() {
+    return this.sortEvents(dict);
 
-      return dict.map((day: any) => {
-          
+  }
 
-          return (
+  setCityEvent(event: EventI) {
+    const city: CityI = this.state.cities.find((city: CityI) => (event.city as number) === city.id)!;
+    if (city) {event.city = city;}
+  }
 
-            <div className="day-events">
+  setEventDuration(event: EventI) {
+    event.duration = this.dateMeasure(new Date(event.endDate).getTime() - new Date(event.startDate).getTime());
+  }
+
+  dateMeasure(ms: number) {
+
+    var h, m, s;
+    s = Math.floor(ms / 1000);
+    m = Math.floor(s / 60);
+    s = s % 60;
+    h = Math.floor(m / 60);
+    m = m % 60;
+    h = h % 24;
   
-              <h2 className="day-title">{ day[0].dateFormatted }</h2>
-      
-              <div className="card events-card">
-                {
-                  day[0].events.map((event: any) => {
-                    return (
+    return this.setEventDurationFormat(h, m);
+
+  };
+
+  setEventDurationFormat(h: number, m: number) {
+    if (h === 0) { return m + 'mins'; }
+    if (m === 0) { return h + 'h'; }
+    return `${h}h ${m}mins`
+  }
+
+  getEventsDays() {
+
+    return this.formatEventsData().map((day: any) => {
+        
+      return (
+
+        <div className="day-events">
+
+          <h2 className="day-title">{ day[0].date_formatted }</h2>
+          <div className="card events-card">
+            {
+              day[0].events.map((event: any) => {
+                return (
+
+                  <div className="event-row">
+                    <div className="hour">
+                      <span>{ `${event.startDate.getHours()}:${(event.startDate.getMinutes()<10?'0':'') + event.startDate.getMinutes()}` }</span>
+                    </div>
+                    <div className="content">
                       <p>{ event.name }</p>
-                    )
-                  })
-                }
-              </div>
+                      <span>{ event.city.name}</span>
+                      <span>{ event.duration}</span>
+                    </div>
+                    <div className="buttons">
+                      <button className="btn sign-up">Sign up</button>
+                    </div>
+                  </div>
 
-            </div>
-    
-          )
+                )
+              })
+            }
+          </div>
 
-      }
+        </div>
 
-    )}
+      )
+
+    }
+
+  )}
+
+  sortEvents(eventDay: any[]) {
+    return eventDay;
+  }
+
+  render() {
+
+    const eventsDays = this.getEventsDays();
 
     return (
       <div className="events-container">
