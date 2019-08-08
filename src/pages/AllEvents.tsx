@@ -1,42 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Popup from "reactjs-popup";
+import { AllEventsStateI, DayEventsI, EventI, CityI } from '../helpers/interfaces';
 import '../styles/AllEvents.scss';
-
-interface StateI {
-  events: EventI[],
-  formattedEvents: DayEventsI[],
-  cities: CityI[],
-  event?: EventI,
-  open: boolean
-}
-
-interface DayEventsI {
-  [key: string]: {
-    id: string;
-    date_formatted: string;
-    full_date: Date,
-    events: EventI[];
-  }
-}
-interface EventI {
-  readonly id: number;
-  readonly isFree: boolean;
-  readonly name: string,
-  city: number | CityI;
-  startDate: Date;
-  readonly endDate: Date;
-  duration: string
-}
-
-interface CityI {
-  readonly id: number;
-  readonly name: string;
-}
 
 class AllEvents extends Component {
 
-  state: StateI = {
+  state: AllEventsStateI = {
     events: [],
     formattedEvents: [],
     cities: [],
@@ -48,13 +18,10 @@ class AllEvents extends Component {
 
     super(props);
 
-    this.formatEventsData = this.formatEventsData.bind(this);
     this.setCityEvent = this.setCityEvent.bind(this);
     this.getEventsDays = this.getEventsDays.bind(this);
     this.setEventDuration = this.setEventDuration.bind(this);
     this.dateMeasure = this.dateMeasure.bind(this);
-    this.setEventDurationFormat = this.setEventDurationFormat.bind(this);
-    this.sortEvents = this.sortEvents.bind(this);
 
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -78,15 +45,13 @@ class AllEvents extends Component {
   formatEventsData() {
 
     let dict: DayEventsI = {};
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
 
     this.state.events.forEach((event: EventI) => {
 
       event.startDate = new Date(event.startDate);
 
       const dictKey: string = `${ event.startDate.getDate()}${event.startDate.getMonth()}${event.startDate.getFullYear() }`;
-      const dateFormatted = `${ days[event.startDate.getDay()] } ${ event.startDate.getDate() } ${ months[event.startDate.getMonth()] }`;
+      const dateFormatted = this.datePrettier(event.startDate);
 
       if (!dict[dictKey]) {
 
@@ -111,9 +76,15 @@ class AllEvents extends Component {
 
   }
 
+  datePrettier(date: Date) {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
+    return `${ days[date.getDay()] } ${ date.getDate() } ${ months[date.getMonth()] }`;
+  }
+
   setCityEvent(event: EventI) {
-    const city: CityI = this.state.cities.find((city: CityI) => (event.city as number) === city.id)!;
-    if (city) {event.city = city;}
+    const city: CityI = this.state.cities.find((city: CityI) => event.city === city.id)!;
+    if (city) { event.city = city}
   }
 
   setEventDuration(event: EventI) {
@@ -144,16 +115,17 @@ class AllEvents extends Component {
 
     const events = this.formatEventsData();
 
-    return events.map((event, i) => {
+    return events.map((dayEvents, i) => {
         
       return (
 
         <div className="day-events" key={"day-events-" + i}>
 
-          <h2 className="day-title">{ event.date_formatted }</h2>
+          <h2 className="day-title">{ dayEvents.date_formatted }</h2>
           <div className="card events-card">
             {
-              event.events.map((event: any, i) => {
+              dayEvents.events.map((event: EventI, i) => {
+
                 return (
 
                   <div className="event-row" key={"event-row-" + i}>
@@ -165,7 +137,7 @@ class AllEvents extends Component {
                       <div className="event-details">
                         <div className="location mr-3">
                           <i className="fas fa-map-marker-alt"></i>
-                          <span>{ event.city.name}</span>
+                          <span>{ event.city.name }</span>
                         </div>
                         <div className="duration">
                           <i className="fas fa-stopwatch"></i>
@@ -215,7 +187,7 @@ class AllEvents extends Component {
   render() {
 
     const contentStyle = {
-        maxWidth: "850px",
+        maxWidth: "800px",
         width: "90%"
     };
 
@@ -237,18 +209,18 @@ class AllEvents extends Component {
                       <i className="fas fa-times"></i>
                     </button>
                   </div>
-                  <div className="modal-body">
+                  <div className="react-modal-body">
                     <div className="modal-text">
                       <p className="react-modal-description">
                         You are about to sign up for <b>{this.state.event!.name}</b>.
-                        This event takes place the XXX in XXX.
+                        This event takes place the {this.datePrettier(this.state.event!.startDate)} in {this.state.event!.city.name}.
                       </p>
                       <p>Are you sure?</p>
                     </div>
                   </div>
-                  <div className="modal-footer">
-                    <button>Cancel</button>
-                    <button>Join</button>
+                  <div className="react-modal-footer">
+                    <button className="btn mr-3">Cancel</button>
+                    <button className="btn">Join</button>
                   </div>
                 </div>
               )}
