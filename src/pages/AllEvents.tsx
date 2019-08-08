@@ -26,6 +26,8 @@ class AllEvents extends Component {
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
 
+    this.joinToEvent = this.joinToEvent.bind(this);
+
   }
 
   componentDidMount() {
@@ -129,7 +131,7 @@ class AllEvents extends Component {
 
     const events = this.formatEventsData();
 
-    return events.map((dayEvents, i) => {
+    return events.map((dayEvents: DayEventsI, i) => {
         
       return (
 
@@ -193,6 +195,13 @@ class AllEvents extends Component {
     this.setState({ event: null, open: false });
   }
 
+  joinToEvent() {
+    axios.post(`https://5d48447c2d59e50014f209ff.mockapi.io/trivago/my-events`, this.state.event)
+      .then(res => {
+        this.setState({ event: null, open: false });
+      })
+  }
+
 
   render() {
 
@@ -215,7 +224,7 @@ class AllEvents extends Component {
                 <div className="react-modal">
                   <div className="react-modal-header">
                     <span>Join the event</span>
-                    <button onClick={this.closeModal.bind(this)} className="close-btn">
+                    <button onClick={this.closeModal} className="close-btn">
                       <i className="fas fa-times"></i>
                     </button>
                   </div>
@@ -229,8 +238,8 @@ class AllEvents extends Component {
                     </div>
                   </div>
                   <div className="react-modal-footer">
-                    <button className="btn mr-3">Cancel</button>
-                    <button className="btn">Join</button>
+                    <button className="btn mr-3" onClick={this.closeModal}>Cancel</button>
+                    <button className="btn" onClick={this.joinToEvent}>Join</button>
                   </div>
                 </div>
               )}
