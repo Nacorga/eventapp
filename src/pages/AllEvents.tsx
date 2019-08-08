@@ -139,9 +139,17 @@ class AllEvents extends Component {
                       <span>{ `${event.startDate.getHours()}:${(event.startDate.getMinutes()<10?'0':'') + event.startDate.getMinutes()}` }</span>
                     </div>
                     <div className="content">
-                      <p>{ event.name }</p>
-                      <span>{ event.city.name}</span>
-                      <span>{ event.duration}</span>
+                      <p>{ event.name }<span className="free-event ml-3">{event.isFree ? 'Free' : null}</span></p>
+                      <div className="event-details">
+                        <div className="location mr-3">
+                          <i className="fas fa-map-marker-alt"></i>
+                          <span>{ event.city.name}</span>
+                        </div>
+                        <div className="duration">
+                          <i className="fas fa-stopwatch"></i>
+                          <span>{ event.duration}</span>
+                        </div>
+                      </div>
                     </div>
                     <div className="buttons">
                       <button className="btn sign-up">Sign up</button>
@@ -180,3 +188,5 @@ class AllEvents extends Component {
 }
 
 export default AllEvents;
+
+{/* <i className="fa fa-spinner fa-spin"></i> */}

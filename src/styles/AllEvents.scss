@@ -18,22 +18,52 @@
         .event-row {
             padding: 20px 0;
             display: grid;
-            grid-template-columns: 15% 70% 15%;
+            grid-template-columns: 10% 75% 15%;
 
             &:not(:last-child) {
                 border-bottom: 1px solid $GREY;
             }
 
             .hour {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
                 span {
                     font-size: 22px;
                     font-weight: 500;
+                }
+            }
+
+            .content {
+                padding-left: 20px;
+
+                .free-event {
+                    color: $GREEN;
+                    font-weight: bold;
+                }
+
+                .event-details {
+                    display: flex;
+                    align-items: center;
+
+                    i {
+                        margin-right: 5px;
+                    }
                 }
             }
     
             .buttons {
                 display: flex;
                 justify-content: center;
+                align-items: center;
+
+                .btn {
+                    &.sign-up {
+                        background: $BLUE;
+                        color: #fff;
+                    }
+                }
             }
         }
     }
