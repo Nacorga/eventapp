@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import Popup from "reactjs-popup";
-import { AllEventsStateI, DayEventsI, EventI, CityI } from '../helpers/interfaces';
+import { AllEventsStateI, DicDayEventsI, DayEventsI, EventI, CityI } from '../helpers/interfaces';
 import '../styles/AllEvents.scss';
 
 class AllEvents extends Component {
@@ -44,7 +44,7 @@ class AllEvents extends Component {
 
   formatEventsData() {
 
-    let dict: DayEventsI = {};
+    let dict: DicDayEventsI = {};
 
     this.state.events.forEach((event: EventI) => {
 
@@ -72,7 +72,7 @@ class AllEvents extends Component {
       
     });
 
-    return this.sortEvents(dict);
+    return this.sortData(dict);
 
   }
 
@@ -89,6 +89,20 @@ class AllEvents extends Component {
 
   setEventDuration(event: EventI) {
     event.duration = this.dateMeasure(new Date(event.endDate).getTime() - new Date(event.startDate).getTime());
+  }
+
+  sortData(dict: DicDayEventsI) {
+
+    const items: DayEventsI[] = Object.keys(dict).map((key) => {
+      return dict[key];
+    });
+
+    items.forEach((dayEvent: DayEventsI) => {
+      this.sortEvents(dayEvent.events);
+    });
+
+    return this.sortDays(items);
+
   }
 
   dateMeasure(ms: number) {
@@ -163,16 +177,12 @@ class AllEvents extends Component {
 
   }
 
-  sortEvents(events: DayEventsI) {
-    
-    const items = Object.keys(events).map((key) => {
-      return events[key];
-    });
+  sortDays(dayEvents: DayEventsI[]) {
+    return dayEvents.sort((a, b) => (a.full_date > b.full_date) ? 1 : ((b.full_date > a.full_date) ? -1 : 0));
+  }
 
-    items.sort((a, b) => (a.full_date > b.full_date) ? 1 : ((b.full_date > a.full_date) ? -1 : 0));
-
-    return items;
-
+  sortEvents(events: EventI[]) {
+    return events.sort((a, b) => (a.startDate > b.startDate) ? 1 : ((b.startDate > a.startDate) ? -1 : 0));
   }
 
   openModal(event: EventI){
