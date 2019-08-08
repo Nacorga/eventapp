@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import Popup from "reactjs-popup";
 import '../styles/AllEvents.scss';
+
+interface StateI {
+  events: EventI[],
+  formattedEvents: DayEventsI[],
+  cities: CityI[],
+  event?: EventI,
+  open: boolean
+}
 
 interface DayEventsI {
   [key: string]: {
@@ -12,11 +21,11 @@ interface DayEventsI {
 }
 interface EventI {
   readonly id: number;
-  isFree: boolean;
-  name: string,
+  readonly isFree: boolean;
+  readonly name: string,
   city: number | CityI;
   startDate: Date;
-  endDate: Date;
+  readonly endDate: Date;
   duration: string
 }
 
@@ -27,10 +36,12 @@ interface CityI {
 
 class AllEvents extends Component {
 
-  state = {
+  state: StateI = {
     events: [],
     formattedEvents: [],
-    cities: []
+    cities: [],
+    event: undefined,
+    open: false
   }
 
   constructor(props: any) {
@@ -44,6 +55,9 @@ class AllEvents extends Component {
     this.dateMeasure = this.dateMeasure.bind(this);
     this.setEventDurationFormat = this.setEventDurationFormat.bind(this);
     this.sortEvents = this.sortEvents.bind(this);
+
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
 
   }
 
@@ -130,19 +144,19 @@ class AllEvents extends Component {
 
     const events = this.formatEventsData();
 
-    return events.map((event) => {
+    return events.map((event, i) => {
         
       return (
 
-        <div className="day-events">
+        <div className="day-events" key={"day-events-" + i}>
 
           <h2 className="day-title">{ event.date_formatted }</h2>
           <div className="card events-card">
             {
-              event.events.map((event: any) => {
+              event.events.map((event: any, i) => {
                 return (
 
-                  <div className="event-row">
+                  <div className="event-row" key={"event-row-" + i}>
                     <div className="hour">
                       <span>{ `${event.startDate.getHours()}:${(event.startDate.getMinutes()<10?'0':'') + event.startDate.getMinutes()}` }</span>
                     </div>
@@ -160,7 +174,7 @@ class AllEvents extends Component {
                       </div>
                     </div>
                     <div className="buttons">
-                      <button className="btn sign-up">Sign up</button>
+                      <button className="btn sign-up" onClick={this.openModal.bind(this, event)}>Sign up</button>
                     </div>
                   </div>
 
@@ -179,7 +193,6 @@ class AllEvents extends Component {
 
   sortEvents(events: DayEventsI) {
     
-    // Create items array
     const items = Object.keys(events).map((key) => {
       return events[key];
     });
@@ -190,13 +203,59 @@ class AllEvents extends Component {
 
   }
 
+  openModal(event: EventI){
+    this.setState({ event, open: true });
+  }
+
+  closeModal() {
+    this.setState({ event: null, open: false });
+  }
+
+
   render() {
 
-    return (
+    const contentStyle = {
+        maxWidth: "850px",
+        width: "90%"
+    };
+
+    return [
+
       <div className="events-container">
         { this.getEventsDays() }
       </div>
-    );
+      
+      ,
+
+      <React.Fragment>
+          <Popup key="popup" open={this.state.open} lockScroll contentStyle={contentStyle} closeOnDocumentClick={false}>
+              {close => (                        
+                <div className="react-modal">
+                  <div className="react-modal-header">
+                    <span>Join the event</span>
+                    <button onClick={this.closeModal.bind(this)} className="close-btn">
+                      <i className="fas fa-times"></i>
+                    </button>
+                  </div>
+                  <div className="modal-body">
+                    <div className="modal-text">
+                      <p className="react-modal-description">
+                        You are about to sign up for <b>{this.state.event!.name}</b>.
+                        This event takes place the XXX in XXX.
+                      </p>
+                      <p>Are you sure?</p>
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button>Cancel</button>
+                    <button>Join</button>
+                  </div>
+                </div>
+              )}
+          </Popup>
+      </React.Fragment>
+
+    ];
 
   }
 

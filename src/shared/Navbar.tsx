@@ -14,13 +14,13 @@ class Navbar extends Component {
 
     const navLinks = navbar.map((item, i) => {
       return (
-        <NavLink className="nav-item" activeClassName="active" to={item.route}>{item.name}</NavLink >
+        <NavLink key={"navlink-" + i} className="nav-item" activeClassName="active" to={item.route}>{item.name}</NavLink >
       )
     });
 
     const navRoutes = navbar.map((item, i) => {
       return (
-        <Route exact path={item.route} component={components[i]} />
+        <Route key={"route-" + i} exact path={item.route} component={components[i]} />
       )
     });
 

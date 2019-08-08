@@ -3,12 +3,12 @@
 .day-events {
 
     &:not(:last-child) {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
 
     .day-title {
-        font-size: 14px;
-        margin-bottom: 10px;
+        font-size: 16px;
+        margin-bottom: 15px;
         font-weight: bold;
     }
 
@@ -68,4 +68,24 @@
         }
     }
 
+}
+
+.react-modal {
+    .react-modal-header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        text-align: center;
+        background: $LIGHT_GREY;
+        border-bottom: 1px solid $GREY;
+
+        .close-btn {
+            position: absolute;
+            right: 10px;
+            background: transparent;
+            border: none;
+        }
+    }
 }
