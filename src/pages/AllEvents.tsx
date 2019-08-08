@@ -2,6 +2,14 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import '../styles/AllEvents.scss';
 
+interface DayEventsI {
+  [key: string]: {
+    id: string;
+    date_formatted: string;
+    full_date: Date,
+    events: EventI[];
+  }
+}
 interface EventI {
   readonly id: number;
   isFree: boolean;
@@ -25,12 +33,12 @@ class AllEvents extends Component {
     cities: []
   }
 
-  constructor() {
+  constructor(props: any) {
 
-    super('hola');
+    super(props);
 
-    this.setCityEvent = this.setCityEvent.bind(this);
     this.formatEventsData = this.formatEventsData.bind(this);
+    this.setCityEvent = this.setCityEvent.bind(this);
     this.getEventsDays = this.getEventsDays.bind(this);
     this.setEventDuration = this.setEventDuration.bind(this);
     this.dateMeasure = this.dateMeasure.bind(this);
@@ -47,6 +55,7 @@ class AllEvents extends Component {
     ]).then(axios.spread((events, cities) => {
       this.setState({events: events.data});
       this.setState({cities: cities.data});
+      this.formatEventsData();
     }))
     .catch(error => console.log(error));
 
@@ -54,38 +63,35 @@ class AllEvents extends Component {
 
   formatEventsData() {
 
-    let dict: any[] = [];
+    let dict: DayEventsI = {};
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
 
-    this.state.events.forEach((event: any) => {
+    this.state.events.forEach((event: EventI) => {
 
       event.startDate = new Date(event.startDate);
 
-      const dictKey: any = `${ event.startDate.getDate()}${event.startDate.getMonth()}${event.startDate.getFullYear() }`;
+      const dictKey: string = `${ event.startDate.getDate()}${event.startDate.getMonth()}${event.startDate.getFullYear() }`;
       const dateFormatted = `${ days[event.startDate.getDay()] } ${ event.startDate.getDate() } ${ months[event.startDate.getMonth()] }`;
 
       if (!dict[dictKey]) {
 
-        dict[dictKey] = [
-          {
-            id: dictKey,
-            date_formatted: dateFormatted,
-            events: []
-          }
-        ];
+        dict[dictKey] = {
+          id: dictKey,
+          date_formatted: dateFormatted,
+          full_date: new Date(`${dateFormatted} ${event.startDate.getFullYear()}`),
+          events: []
+        };
 
       }
 
-      if (dictKey === dict[dictKey][0].id) {
+      if (dictKey === dict[dictKey].id) {
         this.setCityEvent(event);
         this.setEventDuration(event);
-        dict[dictKey][0].events.push(event);
+        dict[dictKey].events.push(event);
       }
       
     });
-
-    console.log(dict)
 
     return this.sortEvents(dict);
 
@@ -122,16 +128,18 @@ class AllEvents extends Component {
 
   getEventsDays() {
 
-    return this.formatEventsData().map((day: any) => {
+    const events = this.formatEventsData();
+
+    return events.map((event) => {
         
       return (
 
         <div className="day-events">
 
-          <h2 className="day-title">{ day[0].date_formatted }</h2>
+          <h2 className="day-title">{ event.date_formatted }</h2>
           <div className="card events-card">
             {
-              day[0].events.map((event: any) => {
+              event.events.map((event: any) => {
                 return (
 
                   <div className="event-row">
@@ -165,21 +173,28 @@ class AllEvents extends Component {
 
       )
 
-    }
+    })
 
-  )}
+  }
 
-  sortEvents(eventDay: any[]) {
-    return eventDay;
+  sortEvents(events: DayEventsI) {
+    
+    // Create items array
+    const items = Object.keys(events).map((key) => {
+      return events[key];
+    });
+
+    items.sort((a, b) => (a.full_date > b.full_date) ? 1 : ((b.full_date > a.full_date) ? -1 : 0));
+
+    return items;
+
   }
 
   render() {
 
-    const eventsDays = this.getEventsDays();
-
     return (
       <div className="events-container">
-        { eventsDays }
+        { this.getEventsDays() }
       </div>
     );
 
@@ -188,5 +203,3 @@ class AllEvents extends Component {
 }
 
 export default AllEvents;
-
-{/* <i className="fa fa-spinner fa-spin"></i> */}
