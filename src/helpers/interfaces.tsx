@@ -1,16 +1,8 @@
-export interface AllEventsStateI {
-    events: EventI[],
-    formattedEvents: DayEventsI[],
-    cities: CityI[],
-    event?: EventI,
-    open: boolean
-}
-  
-export interface DicDayEventsI {
-    [key: string]: DayEventsI
+export interface DicDayEventI {
+    [key: string]: DayEventI
 }
 
-export interface DayEventsI {
+export interface DayEventI {
     id: string;
     date_formatted: string;
     full_date: Date,

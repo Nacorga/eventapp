@@ -35,7 +35,7 @@ class Navbar extends Component {
           </div>
         </div>
         <Switch>
-          <div className="container mt-5 mb-5">
+          <div className="main-wrapper mt-5 mb-5">
             { navRoutes }
           </div>
         </Switch>

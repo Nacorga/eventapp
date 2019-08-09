@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import '../styles/AllEvents.scss';
-import { DayEventsI, EventI } from '../helpers/interfaces';
+import '../styles/Events.scss';
+import { EventI } from '../helpers/interfaces';
 
 class MyEvents extends Component {
 
@@ -61,7 +61,7 @@ class MyEvents extends Component {
   render() {
 
     return (
-      <div className="events-container">
+      <div className="container">
         { this.getEventsDays() }
       </div>
     );

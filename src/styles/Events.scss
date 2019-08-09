@@ -65,6 +65,10 @@
                     background: $BLUE;
                     color: #fff;
                 }
+                &.sign-down {
+                    background: $RED;
+                    color: #fff;
+                }
             }
         }
     }
