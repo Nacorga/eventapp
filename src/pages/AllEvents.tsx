@@ -29,8 +29,8 @@ class AllEvents extends Component {
 
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
-
     this.joinToEvent = this.joinToEvent.bind(this);
+    this.showFreeEvents = this.showFreeEvents.bind(this);
 
   }
 
@@ -62,6 +62,11 @@ class AllEvents extends Component {
       })
   }
 
+  showFreeEvents() {
+    const freeEvents = this.state.events.filter((event: EventI) => event.isFree);
+    this.setState({ events: freeEvents });
+  }
+
 
   render() {
 
@@ -75,7 +80,9 @@ class AllEvents extends Component {
       <div className="container">
 
         <div className="row mb-5">
-          <Filters></Filters>
+          <Filters
+            showFreeEvents={this.showFreeEvents}>
+          </Filters>
         </div>
 
         <FormattedEvents

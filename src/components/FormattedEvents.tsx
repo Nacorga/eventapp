@@ -4,7 +4,7 @@ import { datePrettier } from '../utils/date-prettier';
 import axios from 'axios';
 import '../styles/Events.scss';
 
-interface ParentPropsI {
+interface FormattedEventsPropsI {
   events: EventI[];
   cities?: CityI[],
   component: string,
@@ -12,7 +12,7 @@ interface ParentPropsI {
   refreshEvents?: () => void,
 }
 
-class FormattedEvents extends Component<ParentPropsI> {
+class FormattedEvents extends Component<FormattedEventsPropsI> {
 
   constructor(props: any) {
 

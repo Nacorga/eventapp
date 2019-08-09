@@ -3,7 +3,11 @@ import TextField from '@material-ui/core/TextField';
 import '../styles/Filters.scss';
 import { FormControl, InputLabel, Select, Button, MenuItem } from '@material-ui/core';
 
-class Filters extends Component {
+interface FilterPropsI {
+    showFreeEvents: () => void
+}
+
+class Filters extends Component<FilterPropsI> {
 
     handleChangeName() {
 
@@ -11,6 +15,10 @@ class Filters extends Component {
 
     handleChangeSelect() {
         
+    }
+
+    showFreeEvents() {
+        this.props.showFreeEvents();
     }
 
     render() {
@@ -43,7 +51,7 @@ class Filters extends Component {
                     </Select>
                 </FormControl>
 
-                <Button variant="contained" className="btn-free">Free events</Button>
+                <Button variant="contained" className="btn-free" onClick={this.showFreeEvents.bind(this)}>Show free events</Button>
 
             </form>
         )

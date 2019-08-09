@@ -7,7 +7,7 @@ html body {
   background-color: $LIGHT_GREY;
 }
 
-.btn {
+button {
   &:focus {
     outline: none !important;
   }
