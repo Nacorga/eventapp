@@ -1,10 +1,13 @@
 @import '../styles/variables';
 
-.day-events {
-
+.day-events-row {
     &:not(:last-child) {
         margin-bottom: 30px;
     }
+}
+
+.day-events {
+    width: 100%;
 
     .day-title {
         font-size: 16px;

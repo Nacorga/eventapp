@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Popup from "reactjs-popup";
 import { EventI, CityI } from '../helpers/interfaces';
-import FormattedEvents from '../shared/FormattedEvents';
+import FormattedEvents from '../components/FormattedEvents';
 import { datePrettier } from '../utils/date-prettier';
+import Filters from '../components/Filters';
 import '../styles/Events.scss';
 
 export interface AllEventsStateI {
@@ -72,12 +73,18 @@ class AllEvents extends Component {
     return [
 
       <div className="container">
+
+        <div className="row mb-5">
+          <Filters></Filters>
+        </div>
+
         <FormattedEvents
           events={this.state.events}
           cities={this.state.cities}
           component={'All events'}
-          openModal={this.openModal}
-          ></FormattedEvents>
+          openModal={this.openModal}>
+        </FormattedEvents>
+
       </div>
       
       ,

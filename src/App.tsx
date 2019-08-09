@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Navbar from './shared/Navbar';
+import Navbar from './components/Navbar';
 import './styles/App.scss';
 
 class App extends Component {

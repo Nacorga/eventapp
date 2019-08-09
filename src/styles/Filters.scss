@@ -1,0 +1,36 @@
+@import '../styles/variables';
+
+.filters-form {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+
+    .tf-name,
+    .fc-select-time {
+        margin: 0 30px 0 0;
+    }
+
+
+    .tf-name {
+        width: 200px;
+        height: 45px;
+    }
+
+    .fc-select-time {
+        width: 200px;
+        height: 45px;
+        margin-right: 20px;
+    }
+
+    .btn-free {
+        position: absolute;
+        right: 0;
+        background: $GREEN;
+        color: #fff;
+
+        &:hover {
+            background: $GREEN;
+        }
+    }
+}

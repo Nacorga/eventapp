@@ -6,3 +6,9 @@ html body {
   box-sizing: border-box;
   background-color: $LIGHT_GREY;
 }
+
+.btn {
+  &:focus {
+    outline: none !important;
+  }
+}

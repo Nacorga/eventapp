@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import FormattedEvents from '../shared/FormattedEvents';
+import FormattedEvents from '../components/FormattedEvents';
 import '../styles/Events.scss';
 
 class MyEvents extends Component {
