@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { DicDayEventI, DayEventI, EventI, CityI } from '../helpers/interfaces';
 import { datePrettier } from '../utils/date-prettier';
+import axios from 'axios';
 import '../styles/Events.scss';
 
 interface ParentPropsI {
   events: EventI[];
-  cities: CityI[],
+  cities?: CityI[],
   component: string,
-  openModal: (event: EventI) => void
+  openModal?: (event: EventI) => void,
+  refreshEvents?: () => void,
 }
 
 class FormattedEvents extends Component<ParentPropsI> {
@@ -46,8 +48,8 @@ class FormattedEvents extends Component<ParentPropsI> {
       }
 
       if (dictKey === dict[dictKey].id) {
-        this.setCityEvent(event);
-        this.setEventDuration(event);
+        if (!event.city.name) { this.setCityEvent(event); }
+        if (!event.duration) { this.setEventDuration(event); }
         dict[dictKey].events.push(event);
       }
       
@@ -58,7 +60,7 @@ class FormattedEvents extends Component<ParentPropsI> {
   }
 
   setCityEvent(event: EventI) {
-    const city: CityI = this.props.cities.find((city: CityI) => event.city === city.id)!;
+    const city: CityI = this.props.cities!.find((city: CityI) => event.city === city.id)!;
     if (city) { event.city = city}
   }
 
@@ -101,7 +103,15 @@ class FormattedEvents extends Component<ParentPropsI> {
   }
 
   handleEvent(event: EventI) {
-    this.props.openModal(event);
+    this.props.openModal!(event);
+  }
+
+  unsubscribeToEvent(event: EventI) {
+    axios.delete(`https://5d48447c2d59e50014f209ff.mockapi.io/trivago/my-events/${event.id}`)
+      .then(res => {
+        this.props.refreshEvents!();
+      })
+      .catch(error => console.log(error));
   }
 
   getEventsDays() {
@@ -143,7 +153,7 @@ class FormattedEvents extends Component<ParentPropsI> {
                         this.props.component === 'All events' ?
                         <button className="btn sign-up" onClick={this.handleEvent.bind(this, event)}>Sign up</button>
                         :
-                        <button className="btn sign-down">Sign up</button>
+                        <button className="btn sign-down" onClick={this.unsubscribeToEvent.bind(this, event)}>Unsubscribe</button>
                       }
                     </div>
                   </div>
