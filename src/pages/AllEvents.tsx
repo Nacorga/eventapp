@@ -14,6 +14,7 @@ export interface AllEventsStateI {
   cities: CityI[],
   event?: EventI,
   open: boolean,
+  activeFilters: boolean,
 }
 
 class AllEvents extends Component {
@@ -23,7 +24,8 @@ class AllEvents extends Component {
     events: [],
     cities: [],
     event: undefined,
-    open: false
+    open: false,
+    activeFilters: false
   }
 
   constructor(props: any) {
@@ -35,6 +37,7 @@ class AllEvents extends Component {
 
     this.joinToEvent = this.joinToEvent.bind(this);
 
+    this.filterByText = this.filterByText.bind(this);
     this.filterByStartHour = this.filterByStartHour.bind(this);
     this.showFreeEvents = this.showFreeEvents.bind(this);
 
@@ -67,6 +70,31 @@ class AllEvents extends Component {
       .then(res => {
         this.setState({ event: null, open: false });
       })
+  }
+
+  filterByText(text: string) {
+
+    if (text !== '') {
+
+      const inputText = text.toLowerCase();
+
+      let filteredEvents: EventI[] = this.state.original_events.filter((event: EventI) => {
+
+        const eventName = event.name.toLowerCase();
+        const cityName = event.city.name.toLowerCase();
+
+        if (eventName.indexOf(inputText) !== -1 || cityName.indexOf(inputText) !== -1) {
+          return event;
+        }
+
+      });
+
+      this.setState({ events: filteredEvents });
+
+    } else {
+      this.setState({ events: this.state.original_events });
+    }
+
   }
 
   filterByStartHour(value: number) {
@@ -106,12 +134,14 @@ class AllEvents extends Component {
   }
 
   showFreeEvents(status: boolean) {
+
     if (status) {
-      const freeEvents = this.state.events.filter((event: EventI) => event.isFree);
+      const freeEvents: EventI[] = this.state.events.filter((event: EventI) => event.isFree);
       this.setState({ events: freeEvents });
     } else {
       this.setState({ events: this.state.original_events });
     }
+
   }
 
 
@@ -128,6 +158,7 @@ class AllEvents extends Component {
 
         <div className="row mb-5">
           <Filters
+            textFilter={this.filterByText}
             startHour={this.filterByStartHour}
             showFreeEvents={this.showFreeEvents}>
           </Filters>

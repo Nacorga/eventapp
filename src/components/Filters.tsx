@@ -4,12 +4,13 @@ import '../styles/Filters.scss';
 import { FormControl, InputLabel, Select, Button, MenuItem } from '@material-ui/core';
 
 interface FilterPropsI {
+    textFilter: (text: string) => void,
     startHour: (hour: number) => void,
     showFreeEvents: (status: boolean) => void
 }
 
 interface FilterStateI {
-    nameFilter: string;
+    nameValue: string;
     filterValue?: number;
     freeEventsFilter: boolean
 }
@@ -17,7 +18,7 @@ interface FilterStateI {
 class Filters extends Component<FilterPropsI> {
 
     state: FilterStateI = {
-        nameFilter: '',
+        nameValue: '',
         filterValue: 0,
         freeEventsFilter: false
     }
@@ -32,8 +33,13 @@ class Filters extends Component<FilterPropsI> {
 
     }
 
-    handleChangeName() {
-
+    handleChangeName(event: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({nameValue: event.target.value});
+        this.setState({
+            nameValue: event.target.value
+          }, () => {
+              this.props.textFilter(this.state.nameValue)
+        });
     }
 
     handleChangeSelect(event: React.ChangeEvent<{ name?: string; value: unknown }>) {
@@ -56,7 +62,7 @@ class Filters extends Component<FilterPropsI> {
                     id="standard-name"
                     label="Name"
                     className="tf-name"
-                    // value={values.name}
+                    value={this.state.nameValue}
                     onChange={this.handleChangeName.bind(this)}
                     margin="normal">
                 </TextField>
