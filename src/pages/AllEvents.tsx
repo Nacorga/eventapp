@@ -4,10 +4,12 @@ import Popup from "reactjs-popup";
 import { EventI, CityI } from '../helpers/interfaces';
 import FormattedEvents from '../components/FormattedEvents';
 import { datePrettier } from '../utils/date-prettier';
+import { hourFilter, hourFilterDayChange } from '../utils/hour-filter';
 import Filters from '../components/Filters';
 import '../styles/Events.scss';
 
 export interface AllEventsStateI {
+  original_events: EventI[],
   events: EventI[],
   cities: CityI[],
   event?: EventI,
@@ -17,6 +19,7 @@ export interface AllEventsStateI {
 class AllEvents extends Component {
 
   state: AllEventsStateI = {
+    original_events: [],
     events: [],
     cities: [],
     event: undefined,
@@ -29,7 +32,10 @@ class AllEvents extends Component {
 
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+
     this.joinToEvent = this.joinToEvent.bind(this);
+
+    this.filterByStartHour = this.filterByStartHour.bind(this);
     this.showFreeEvents = this.showFreeEvents.bind(this);
 
   }
@@ -40,6 +46,7 @@ class AllEvents extends Component {
       axios.get('https://5d48447c2d59e50014f209ff.mockapi.io/trivago/events'),
       axios.get('https://5d48447c2d59e50014f209ff.mockapi.io/trivago/cities')
     ]).then(axios.spread((events, cities) => {
+      this.setState({original_events: events.data});
       this.setState({events: events.data});
       this.setState({cities: cities.data});
     }))
@@ -62,9 +69,49 @@ class AllEvents extends Component {
       })
   }
 
-  showFreeEvents() {
-    const freeEvents = this.state.events.filter((event: EventI) => event.isFree);
-    this.setState({ events: freeEvents });
+  filterByStartHour(value: number) {
+
+    if (value === 0) {
+
+      this.setState({ events: this.state.original_events });
+      return;
+
+    } else {
+
+      let filteredEvents: EventI[] = [];
+
+      switch(value) { 
+        case 1: { 
+          filteredEvents = hourFilter(this.state.original_events, 6, 12);
+          break; 
+        }  
+        case 2: { 
+          filteredEvents = hourFilter(this.state.original_events, 12, 17);
+          break; 
+        }  
+        case 3: { 
+          filteredEvents = hourFilter(this.state.original_events, 17, 21);
+          break; 
+        }  
+        case 4: { 
+          filteredEvents = hourFilterDayChange(this.state.original_events, 21, 6);
+          break; 
+        } 
+      }
+
+      this.setState({ events: filteredEvents });
+
+    }
+
+  }
+
+  showFreeEvents(status: boolean) {
+    if (status) {
+      const freeEvents = this.state.events.filter((event: EventI) => event.isFree);
+      this.setState({ events: freeEvents });
+    } else {
+      this.setState({ events: this.state.original_events });
+    }
   }
 
 
@@ -81,6 +128,7 @@ class AllEvents extends Component {
 
         <div className="row mb-5">
           <Filters
+            startHour={this.filterByStartHour}
             showFreeEvents={this.showFreeEvents}>
           </Filters>
         </div>
