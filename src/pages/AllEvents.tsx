@@ -14,7 +14,11 @@ export interface AllEventsStateI {
   cities: CityI[],
   event?: EventI,
   open: boolean,
-  activeFilters: boolean,
+  filters: {
+    text: {status: boolean, value: string, events: EventI[]},
+    hour: {status: boolean, value: number, events: EventI[]},
+    free: {status: boolean, value: boolean, events: EventI[]}
+  },
 }
 
 class AllEvents extends Component {
@@ -25,7 +29,11 @@ class AllEvents extends Component {
     cities: [],
     event: undefined,
     open: false,
-    activeFilters: false
+    filters: {
+      text: {status: false, value: '', events: []},
+      hour: {status: false, value: 0, events: []},
+      free: {status: false, value: false, events: []}
+    }
   }
 
   constructor(props: any) {
@@ -40,6 +48,8 @@ class AllEvents extends Component {
     this.filterByText = this.filterByText.bind(this);
     this.filterByStartHour = this.filterByStartHour.bind(this);
     this.showFreeEvents = this.showFreeEvents.bind(this);
+    this.updateFilterState = this.updateFilterState.bind(this);
+    this.checkFilteredEvents = this.checkFilteredEvents.bind(this);
 
   }
 
@@ -89,10 +99,10 @@ class AllEvents extends Component {
 
       });
 
-      this.setState({ events: filteredEvents });
+      this.updateFilterState('text', true, text, filteredEvents);
 
     } else {
-      this.setState({ events: this.state.original_events });
+      this.updateFilterState('text', false, text);
     }
 
   }
@@ -101,7 +111,7 @@ class AllEvents extends Component {
 
     if (value === 0) {
 
-      this.setState({ events: this.state.original_events });
+      this.updateFilterState('hour', false, value);
       return;
 
     } else {
@@ -124,10 +134,11 @@ class AllEvents extends Component {
         case 4: { 
           filteredEvents = hourFilterDayChange(this.state.original_events, 21, 6);
           break; 
-        } 
+        }
+
       }
 
-      this.setState({ events: filteredEvents });
+      this.updateFilterState('hour', true, value, filteredEvents);
 
     }
 
@@ -135,11 +146,48 @@ class AllEvents extends Component {
 
   showFreeEvents(status: boolean) {
 
-    if (status) {
-      const freeEvents: EventI[] = this.state.events.filter((event: EventI) => event.isFree);
-      this.setState({ events: freeEvents });
+    if (!status) {
+      this.updateFilterState('free', false, status);
     } else {
+      const freeEvents: EventI[] = this.state.events.filter((event: EventI) => event.isFree);
+      this.updateFilterState('free', true, status, freeEvents);
+    }
+
+  }
+
+  updateFilterState(prop: any, status: boolean, value?: any, events?: EventI[]) {
+    if (!status) {
+      this.setState((prevState: any) => 
+        ({ filters: {...prevState.filters, [prop]: { ...prevState.filters[prop], status, value, events: [] }} }),
+        () => this.checkFilteredEvents()
+      );
+    } else {
+      this.setState((prevState: any) => 
+        ({ filters: {...prevState.filters, [prop]: { ...prevState.filters[prop], status, value, events }} }),
+        () => this.checkFilteredEvents()
+      );
+    }
+  }
+
+  checkFilteredEvents() {
+
+    if ( Object.values(this.state.filters).every((val: {status: boolean}) => val.status === false) ) {
       this.setState({ events: this.state.original_events });
+    } else {
+      switch(true) {
+        case(this.state.filters.text.status): {
+          this.setState({ events: this.state.filters.text.events });
+          break;
+        }
+        case(this.state.filters.hour.status): {
+          this.setState({ events: this.state.filters.hour.events });
+          break;
+        }
+        case(this.state.filters.free.status): {
+          this.setState({ events: this.state.filters.free.events });
+          break;
+        }
+      }
     }
 
   }
