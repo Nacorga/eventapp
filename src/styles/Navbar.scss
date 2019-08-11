@@ -13,12 +13,17 @@
         width: 60px;
         position: absolute;
         left: 30px;
+
+        @media screen and (max-width: $MOBILE) {
+            left: 15px;
+        }
     }
 }
 
 .nav {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     height: 80px;
     
     a {

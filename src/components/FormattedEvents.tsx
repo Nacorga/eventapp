@@ -122,48 +122,50 @@ class FormattedEvents extends Component<FormattedEventsPropsI> {
         
       return (
 
-        <div className="row day-events-row" key={"day-events-" + i}>
-          <div className="day-events">
+        <div className="day-events" key={"day-events-" + i}>
+          <div className="row">
+            <div className="col">
+              <h2 className="day-title">{ dayEvents.date_formatted }</h2>
+            </div>
+          </div>
 
-            <h2 className="day-title">{ dayEvents.date_formatted }</h2>
-            <div className="card events-card">
-              {
-                dayEvents.events.map((event: EventI, i) => {
+          <div className="events-card">
+            {
+              dayEvents.events.map((event: EventI, i) => {
 
-                  return (
+                return (
 
-                    <div className="event-row" key={"event-row-" + i}>
-                      <div className="hour">
-                        <span>{ `${event.startDate.getHours()}:${(event.startDate.getMinutes()<10?'0':'') + event.startDate.getMinutes()}` }</span>
-                      </div>
-                      <div className="content">
-                        <p>{ event.name }<span className="free-event ml-3">{event.isFree ? 'Free' : null}</span></p>
-                        <div className="event-details">
-                          <div className="location mr-3">
-                            <i className="fas fa-map-marker-alt"></i>
-                            <span>{ event.city.name }</span>
-                          </div>
-                          <div className="duration">
-                            <i className="fas fa-stopwatch"></i>
-                            <span>{ event.duration}</span>
-                          </div>
+                  <div className="row event" key={"events-" + i}>
+                    <div className="col-md-2 hour">
+                      <span>{ `${event.startDate.getHours()}:${(event.startDate.getMinutes()<10?'0':'') + event.startDate.getMinutes()}` }</span>
+                    </div>
+                    <div className="col-md-7 content">
+                      <p>{ event.name }<span className="free-event ml-3">{event.isFree ? 'Free' : null}</span></p>
+                      <div className="event-details">
+                        <div className="location mr-3">
+                          <i className="fas fa-map-marker-alt"></i>
+                          <span>{ event.city.name }</span>
+                        </div>
+                        <div className="duration">
+                          <i className="fas fa-stopwatch"></i>
+                          <span>{ event.duration}</span>
                         </div>
                       </div>
-                      <div className="buttons">
-                        {
-                          this.props.component === 'All events' ?
-                          <button className="btn sign-up" onClick={this.handleEvent.bind(this, event)}>Sign up</button>
-                          :
-                          <button className="btn sign-down" onClick={this.unsubscribeToEvent.bind(this, event)}>Unsubscribe</button>
-                        }
-                      </div>
                     </div>
+                    <div className="col-md-3 buttons">
+                      {
+                        this.props.component === 'All events' ?
+                        <button className="btn sign-up" onClick={this.handleEvent.bind(this, event)}>Sign up</button>
+                        :
+                        <button className="btn sign-down" onClick={this.unsubscribeToEvent.bind(this, event)}>Unsubscribe</button>
+                      }
+                    </div>
+                  </div>
 
-                  )
-                })
-              }
-            </div>
+                )
 
+              })
+            }
           </div>
         </div>
 

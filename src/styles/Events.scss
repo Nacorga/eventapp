@@ -1,77 +1,88 @@
 @import '../styles/variables';
 
-.day-events-row {
+.day-events {
+
     &:not(:last-child) {
         margin-bottom: 30px;
     }
-}
-
-.day-events {
-    width: 100%;
 
     .day-title {
         font-size: 16px;
         margin-bottom: 15px;
         font-weight: bold;
     }
-
 }
 
 .events-card {
-    padding: 0 20px;
+    padding: 0 15px;
+    border: 1px solid rgba(0,0,0,.125);
+    background: #fff;
+    border-radius: 6px;
 
-    .event-row {
+    .row.event {
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    .event {
         padding: 20px 0;
-        display: grid;
-        grid-template-columns: 10% 75% 15%;
 
         &:not(:last-child) {
-            border-bottom: 1px solid $GREY;
+            border-bottom: 1px solid rgba(0,0,0,.125);
+        }
+    }
+
+    .hour {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        span {
+            font-size: 22px;
+            font-weight: 500;
+        }
+    }
+
+    .content {
+        padding-left: 20px;
+
+        .free-event {
+            color: $GREEN;
+            font-weight: bold;
         }
 
-        .hour {
+        .event-details {
             display: flex;
-            justify-content: center;
             align-items: center;
 
-            span {
-                font-size: 22px;
-                font-weight: 500;
+            i {
+                margin-right: 5px;
             }
         }
 
-        .content {
-            padding-left: 20px;
-
-            .free-event {
-                color: $GREEN;
-                font-weight: bold;
-            }
+        @media screen and (max-width: $TABLET) {
+            text-align: center;
+            margin: 20px 0;
 
             .event-details {
-                display: flex;
-                align-items: center;
-
-                i {
-                    margin-right: 5px;
-                }
+                justify-content: center;
             }
         }
+    }
 
-        .buttons {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+    .buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-            .btn {
-                &.sign-up {
-                    background: $BLUE;
-                    color: #fff;
-                }
-                &.sign-down {
-                    background: $RED;
-                    color: #fff;
-                }
+        .btn {
+            &.sign-up {
+                background: $BLUE;
+                color: #fff;
+            }
+            &.sign-down {
+                background: $RED;
+                color: #fff;
             }
         }
     }

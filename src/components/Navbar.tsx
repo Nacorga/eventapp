@@ -35,9 +35,11 @@ class Navbar extends Component {
           </div>
         </div>
         <Switch>
-          <div className="main-wrapper mt-4 mb-4">
-            { navRoutes }
-          </div>
+          <React.Fragment>
+            <div className="main-wrapper mt-4 mb-4">
+              { navRoutes }
+            </div>
+          </React.Fragment>
         </Switch>
       </Router>
   
