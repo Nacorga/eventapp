@@ -24,11 +24,18 @@ class MyEvents extends Component {
 
     return (
       <div className="container">
-        <FormattedEvents
-          events={this.state.events}
-          component={'My events'}
-          refreshEvents={this.getMyEvents.bind(this)}
-        ></FormattedEvents>
+        {
+          this.state.events.length > 0 ?
+            <FormattedEvents
+            events={this.state.events}
+            component={'My events'}
+            refreshEvents={this.getMyEvents.bind(this)}>
+          </FormattedEvents>
+          :
+          <div className="no-events">
+            <span>You are not subscribed to any event</span>
+          </div>
+        }
       </div>
     );
 

@@ -95,7 +95,7 @@ class Filters extends Component<FilterPropsI> {
                             }}
                             >
                             <MenuItem value={0}>Show all</MenuItem>
-                            <MenuItem value={1}>Morning (6am - 12 pm)</MenuItem>
+                            <MenuItem value={1}>Morning (6am - 12pm)</MenuItem>
                             <MenuItem value={2}>Afternoon (12pm - 17pm)</MenuItem>
                             <MenuItem value={3}>Evening (17pm - 21pm)</MenuItem>
                             <MenuItem value={4}>Night (21pm - 6am)</MenuItem>
