@@ -11,6 +11,7 @@ export interface DayEventI {
 
 export interface EventI {
     readonly id: number;
+    meid?: number;
     readonly isFree: boolean;
     readonly name: string,
     city: any,

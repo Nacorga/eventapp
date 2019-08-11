@@ -73,10 +73,25 @@ class AllEvents extends Component {
   }
 
   joinToEvent() {
-    axios.post(`https://5d48447c2d59e50014f209ff.mockapi.io/trivago/my-events`, this.state.event)
+
+    axios.get(`https://5d48447c2d59e50014f209ff.mockapi.io/trivago/my-events`)
       .then(res => {
-        this.setState({ event: null, open: false });
-      })
+
+        if ( res.data.find((event: EventI) => event.meid === this.state.event!.id) ) {
+          alert('You are already subscribed to this event');
+        } else {
+
+          const joinedEvent: EventI = this.state.event!;
+          joinedEvent.meid = this.state.event!.id;
+
+          axios.post(`https://5d48447c2d59e50014f209ff.mockapi.io/trivago/my-events`, this.state.event)
+            .then(res => {
+              this.setState({ event: null, open: false });
+            })
+
+        }
+    });
+
   }
 
   filterByText(text: string, events: EventI[]) {
