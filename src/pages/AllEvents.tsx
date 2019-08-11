@@ -15,10 +15,8 @@ export interface AllEventsStateI {
   event?: EventI,
   open: boolean,
   filters: {
-    text: {status: boolean, value: string, events: EventI[]},
-    hour: {status: boolean, value: number, events: EventI[]},
-    free: {status: boolean, value: boolean, events: EventI[]}
-  },
+    [key: string]: {status: boolean, value?: string | number},
+  }
 }
 
 class AllEvents extends Component {
@@ -30,9 +28,9 @@ class AllEvents extends Component {
     event: undefined,
     open: false,
     filters: {
-      text: {status: false, value: '', events: []},
-      hour: {status: false, value: 0, events: []},
-      free: {status: false, value: false, events: []}
+      text: {status: false, value: ''},
+      hour: {status: false, value: 0},
+      free: {status: false}
     }
   }
 
@@ -47,9 +45,8 @@ class AllEvents extends Component {
 
     this.filterByText = this.filterByText.bind(this);
     this.filterByStartHour = this.filterByStartHour.bind(this);
-    this.showFreeEvents = this.showFreeEvents.bind(this);
-    this.updateFilterState = this.updateFilterState.bind(this);
-    this.checkFilteredEvents = this.checkFilteredEvents.bind(this);
+    this.filterFreeEvents = this.filterFreeEvents.bind(this);
+    this.setFilters = this.setFilters.bind(this);
 
   }
 
@@ -82,112 +79,68 @@ class AllEvents extends Component {
       })
   }
 
-  filterByText(text: string) {
+  filterByText(text: string, events: EventI[]) {
 
-    if (text !== '') {
+    const inputText = text.toLowerCase();
 
-      const inputText = text.toLowerCase();
+    return events.filter((event: EventI) => {
 
-      let filteredEvents: EventI[] = this.state.original_events.filter((event: EventI) => {
+      const eventName = event.name.toLowerCase();
+      const cityName = event.city.name.toLowerCase();
 
-        const eventName = event.name.toLowerCase();
-        const cityName = event.city.name.toLowerCase();
-
-        if (eventName.indexOf(inputText) !== -1 || cityName.indexOf(inputText) !== -1) {
-          return event;
-        }
-
-      });
-
-      this.updateFilterState('text', true, text, filteredEvents);
-
-    } else {
-      this.updateFilterState('text', false, text);
-    }
-
-  }
-
-  filterByStartHour(value: number) {
-
-    if (value === 0) {
-
-      this.updateFilterState('hour', false, value);
-      return;
-
-    } else {
-
-      let filteredEvents: EventI[] = [];
-
-      switch(value) { 
-        case 1: { 
-          filteredEvents = hourFilter(this.state.original_events, 6, 12);
-          break; 
-        }  
-        case 2: { 
-          filteredEvents = hourFilter(this.state.original_events, 12, 17);
-          break; 
-        }  
-        case 3: { 
-          filteredEvents = hourFilter(this.state.original_events, 17, 21);
-          break; 
-        }  
-        case 4: { 
-          filteredEvents = hourFilterDayChange(this.state.original_events, 21, 6);
-          break; 
-        }
-
+      if (eventName.indexOf(inputText) !== -1 || cityName.indexOf(inputText) !== -1) {
+        return event;
       }
 
-      this.updateFilterState('hour', true, value, filteredEvents);
-
-    }
+    });
 
   }
 
-  showFreeEvents(status: boolean) {
-
-    if (!status) {
-      this.updateFilterState('free', false, status);
-    } else {
-      const freeEvents: EventI[] = this.state.events.filter((event: EventI) => event.isFree);
-      this.updateFilterState('free', true, status, freeEvents);
-    }
-
-  }
-
-  updateFilterState(prop: any, status: boolean, value?: any, events?: EventI[]) {
-    if (!status) {
-      this.setState((prevState: any) => 
-        ({ filters: {...prevState.filters, [prop]: { ...prevState.filters[prop], status, value, events: [] }} }),
-        () => this.checkFilteredEvents()
-      );
-    } else {
-      this.setState((prevState: any) => 
-        ({ filters: {...prevState.filters, [prop]: { ...prevState.filters[prop], status, value, events }} }),
-        () => this.checkFilteredEvents()
-      );
+  filterByStartHour(value: number, events: EventI[]) {
+    switch(value) {
+      case 1: { return hourFilter(events, 6, 12); }  
+      case 2: { return hourFilter(events, 12, 17); }  
+      case 3: { return hourFilter(events, 17, 21); }  
+      case 4: { return hourFilterDayChange(events, 21, 6); }
+      default: { return events }
     }
   }
 
-  checkFilteredEvents() {
+  filterFreeEvents(events: EventI[]) {
+    return events.filter((event: EventI) => event.isFree);
+  }
 
-    if ( Object.values(this.state.filters).every((val: {status: boolean}) => val.status === false) ) {
+  setFilters(filter: {type: string, status: boolean, value?: any}) {
+    this.setState((prevState: any) => 
+      ({ filters: {...prevState.filters, [filter.type]: {
+        status: filter.status, value: filter.value }} 
+      }),
+      () => this.applyFilters()
+    );
+  }
+
+  applyFilters() {
+
+    if ( Object.values(this.state.filters).every((elem: any) => elem.status === false) ) {
+
       this.setState({ events: this.state.original_events });
+
     } else {
-      switch(true) {
-        case(this.state.filters.text.status): {
-          this.setState({ events: this.state.filters.text.events });
-          break;
-        }
-        case(this.state.filters.hour.status): {
-          this.setState({ events: this.state.filters.hour.events });
-          break;
-        }
-        case(this.state.filters.free.status): {
-          this.setState({ events: this.state.filters.free.events });
-          break;
-        }
+
+      let events: EventI[] = this.state.original_events;
+      
+      if (this.state.filters.text.status) {
+        events = this.filterByText( (this.state.filters.text.value as string), events);
       }
+      if (this.state.filters.hour.status) {
+        events = this.filterByStartHour((this.state.filters.hour.value as number), events);
+      }
+      if (this.state.filters.free.status) {
+        events = this.filterFreeEvents(events);
+      }
+
+      this.setState({events});
+
     }
 
   }
@@ -206,9 +159,9 @@ class AllEvents extends Component {
 
         <div className="row mb-5">
           <Filters
-            textFilter={this.filterByText}
-            startHour={this.filterByStartHour}
-            showFreeEvents={this.showFreeEvents}>
+            textFilter={this.setFilters}
+            startHour={this.setFilters}
+            showFreeEvents={this.setFilters}>
           </Filters>
         </div>
 

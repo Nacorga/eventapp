@@ -4,23 +4,23 @@ import '../styles/Filters.scss';
 import { FormControl, InputLabel, Select, Button, MenuItem } from '@material-ui/core';
 
 interface FilterPropsI {
-    textFilter: (text: string) => void,
-    startHour: (hour: number) => void,
-    showFreeEvents: (status: boolean) => void
+    textFilter: (textF: {type: string, status: boolean, value: string}) => void,
+    startHour: (hourF: {type: string, status: boolean, value: number}) => void,
+    showFreeEvents: (freeF: {type: string, status: boolean}) => void
 }
 
 interface FilterStateI {
-    nameValue: string;
-    filterValue?: number;
-    freeEventsFilter: boolean
+    textF: {type: string, status: boolean, value: string};
+    hourF: {type: string, status: boolean, value: number};
+    freeF: {type: string, status: boolean}
 }
 
 class Filters extends Component<FilterPropsI> {
 
     state: FilterStateI = {
-        nameValue: '',
-        filterValue: 0,
-        freeEventsFilter: false
+        textF: {type: 'text', status: false, value: ''},
+        hourF: {type: 'hour', status: false, value: 0},
+        freeF: {type: 'free', status: false}
     }
 
     constructor(props: any) {
@@ -34,23 +34,39 @@ class Filters extends Component<FilterPropsI> {
     }
 
     handleChangeName(event: React.ChangeEvent<HTMLInputElement>) {
-        this.setState({nameValue: event.target.value});
-        this.setState({
-            nameValue: event.target.value
-          }, () => {
-              this.props.textFilter(this.state.nameValue)
-        });
+
+        event.persist();
+
+        let status: boolean;
+
+        event.target.value !== '' ? status = true : status = false;
+
+        this.setState((prevState: any) =>
+            ( {textF: {...prevState.textF, status, value: event.target!.value} } ),
+            () => {
+                this.props.textFilter(this.state.textF)
+            });
+
     }
 
     handleChangeSelect(event: React.ChangeEvent<{ name?: string; value: unknown }>) {
-        this.setState({filterValue: event.target.value});
-        this.props.startHour(event.target.value as number);
+
+        let status: boolean;
+
+        event.target.value !== 0 ? status = true : status = false;
+
+        this.setState((prevState: any) =>
+            ( {hourF: {...prevState.hourF, status, value: event.target.value} } ),
+            () => {this.props.startHour(this.state.hourF)});
+
     }
 
     handleButton() {
-        const toggleFilter = this.state.freeEventsFilter = !this.state.freeEventsFilter;
-        this.setState({ freeEventsFilter: toggleFilter})
-        this.props.showFreeEvents(toggleFilter);
+
+        this.setState((prevState: any) =>
+            ( {freeF: {...prevState.freeF, status: this.state.freeF.status = !this.state.freeF.status} } ),
+            () => {this.props.showFreeEvents(this.state.freeF)});
+
     }
 
     render() {
@@ -62,7 +78,7 @@ class Filters extends Component<FilterPropsI> {
                     id="standard-name"
                     label="Name"
                     className="tf-name"
-                    value={this.state.nameValue}
+                    value={this.state.textF.value}
                     onChange={this.handleChangeName.bind(this)}
                     margin="normal">
                 </TextField>
@@ -70,7 +86,7 @@ class Filters extends Component<FilterPropsI> {
                 <FormControl className="fc-select-time">
                     <InputLabel htmlFor="age-simple">Start hour</InputLabel>
                     <Select
-                        value={this.state.filterValue}
+                        value={this.state.hourF.value}
                         onChange={this.handleChangeSelect.bind(this)}
                         inputProps={{
                             name: 'start-hour',
@@ -86,7 +102,7 @@ class Filters extends Component<FilterPropsI> {
                 </FormControl>
                 
                 {
-                    !this.state.freeEventsFilter ?
+                    !this.state.freeF.status ?
                     <Button variant="contained" className="btn btn-free" onClick={this.handleButton}>Show free events</Button>
                     :
                     <Button variant="contained" className="btn btn-all" onClick={this.handleButton}>Show all events</Button>
